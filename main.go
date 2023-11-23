@@ -33,7 +33,8 @@ func main() {
 
 	 }))
 	 v1Router:= chi.NewRouter()
-	 v1Router.HandleFunc("/ready",handlerFunc)
+	 v1Router.Get("/ready",JSONHandler)
+	 v1Router.Get("/err",errorHandler)
 	 router.Mount("/v1",v1Router)
 	
     
