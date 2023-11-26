@@ -7,15 +7,16 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/mbeka02/RSS/internal/auth"
 	"github.com/mbeka02/RSS/internal/database"
 )
 
-func JSONHandler( w http.ResponseWriter , r *http.Request){
-	JSONResponse(w,200,struct{}{})
+func jsonHandler( w http.ResponseWriter , r *http.Request){
+	jsonResponse(w,200,struct{}{})
 }
 
 func errorHandler(w http.ResponseWriter , r *http.Request){
-	ErrorResponse(w,400 , "Something went wrong")
+	errorResponse(w,400 , "Something went wrong")
 
 }
 
@@ -27,7 +28,7 @@ func (apiCfg *apiConfig)createUserHandler( w http.ResponseWriter , r *http.Reque
 	decoder:=json.NewDecoder(r.Body)
 	err:=decoder.Decode(&params)
 	if(err !=nil){
-		ErrorResponse(w,400,fmt.Sprintf("Error parsing json: %v",err))
+		errorResponse(w,400,fmt.Sprintf("Error parsing json: %v",err))
 		return
 		
 	}
@@ -39,12 +40,19 @@ func (apiCfg *apiConfig)createUserHandler( w http.ResponseWriter , r *http.Reque
 
 	})
 	if(err!=nil){
-		ErrorResponse(w,400,fmt.Sprintf("Unable to create user %v:",err))
+		errorResponse(w,400,fmt.Sprintf("Unable to create user %v:",err))
 	}
-	JSONResponse(w,200,dbUserToUser(user))
+	jsonResponse(w,201,dbUserToUser(user))
 }
 
 
 func (apiCfg *apiConfig)getUserHandler( w http.ResponseWriter , r *http.Request){
+	authKey,err:= auth.GetAPIKey(r.Header)
+
+	if(err!=nil){
+		errorResponse(w,403,fmt.Sprintf("Invalid auth credentials: %v",err))
+	}
+    apiCfg.DB.GetUserByApiKey(r.Context(),authKey)
+	//JSONResponse(w,200,auth)
 	
 }

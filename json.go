@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func ErrorResponse(w http.ResponseWriter , code int , message string){
+func errorResponse(w http.ResponseWriter , code int , message string){
 	if code >= 500 {
       log.Println("Error response :",message)
 	}
@@ -16,13 +16,13 @@ func ErrorResponse(w http.ResponseWriter , code int , message string){
 	}
 	
 
-	JSONResponse(w,code, errResponse{
+	jsonResponse(w,code, errResponse{
 		Error: message,
 	})
 	
 }
 
-func JSONResponse(w http.ResponseWriter , code int ,  payload interface{}){
+func jsonResponse(w http.ResponseWriter , code int ,  payload interface{}){
 	data,err:=json.Marshal(payload)
 
 	if(err !=nil){
