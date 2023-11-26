@@ -41,5 +41,10 @@ func (apiCfg *apiConfig)createUserHandler( w http.ResponseWriter , r *http.Reque
 	if(err!=nil){
 		ErrorResponse(w,400,fmt.Sprintf("Unable to create user %v:",err))
 	}
-	JSONResponse(w,200,user)
+	JSONResponse(w,200,dbUserToUser(user))
+}
+
+
+func (apiCfg *apiConfig)getUserHandler( w http.ResponseWriter , r *http.Request){
+	
 }
