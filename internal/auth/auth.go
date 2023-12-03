@@ -18,9 +18,9 @@ func GetAPIKey(headers http.Header)(string , error){
 	if k == ""{
 		return "",errors.New("authentication fail : API key is missing")
 	}
-	vals:= strings.Split(k, "")
+	vals:= strings.Split(k, " ")
 	if len(vals)!=2 {
-		return "",errors.New("authentication fail :API key is invalid/malformed")
+		return "",errors.New("authentication fail :API key is malformed")
 	}
 	if vals[0]!="ApiKey" {
 		return "",errors.New("authentication fail :Malformed key")

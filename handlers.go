@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/mbeka02/RSS/internal/auth"
+
 	"github.com/mbeka02/RSS/internal/database"
 )
 
@@ -46,13 +46,57 @@ func (apiCfg *apiConfig)createUserHandler( w http.ResponseWriter , r *http.Reque
 }
 
 
-func (apiCfg *apiConfig)getUserHandler( w http.ResponseWriter , r *http.Request){
-	authKey,err:= auth.GetAPIKey(r.Header)
+func (apiCfg *apiConfig)getUserHandler( w http.ResponseWriter , r *http.Request , user database.User){
+    
 
-	if(err!=nil){
-		errorResponse(w,403,fmt.Sprintf("Invalid auth credentials: %v",err))
+
+	jsonResponse(w,200, dbUserToUser(user))
+}
+
+func  (apiCfg *apiConfig)getFeedsHandler( w http.ResponseWriter , r *http.Request){
+	feeds,err:=apiCfg.DB.GetUserFeeds(r.Context())
+	if(err !=nil){
+		errorResponse(w,400,fmt.Sprintf("Error getting feeds: %v",err))
+		return
+		
 	}
-    apiCfg.DB.GetUserByApiKey(r.Context(),authKey)
-	//JSONResponse(w,200,auth)
+	jsonResponse(w,200,dbFeedsToFeeds(feeds))
+
+}
+
+
+func (apiCfg *apiConfig)createFeedHandler( w http.ResponseWriter , r *http.Request , user database.User){
+	type parameters struct {
+		Name string `json:"name"`
+		Url string `json:"url"`
+	}
+	params:=parameters{}
+	decoder:=json.NewDecoder(r.Body)
+	err:=decoder.Decode(&params)
+	if(err !=nil){
+		errorResponse(w,400,fmt.Sprintf("Error parsing json: %v",err))
+		return
+		
+	}
+
+	feed,err:=apiCfg.DB.CreateFeed(r.Context(),database.CreateFeedParams{
+		ID: uuid.New(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+		Name: params.Name,
+		Url: params.Url,
+		UserID: user.ID,
+
+	})
+	if(err!=nil){
+		errorResponse(w,400,fmt.Sprintf("Unable to create feed %v:",err))
+	}
+	jsonResponse(w,201,dbFeedToFeed(feed))
+    
+
+
 	
 }
+
+
+
