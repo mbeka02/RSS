@@ -65,6 +65,36 @@ func  (apiCfg *apiConfig)getFeedsHandler( w http.ResponseWriter , r *http.Reques
 }
 
 
+func ( apiCfg *apiConfig)createFeedFollowsHandler( w http.ResponseWriter , r *http.Request , user database.User ){
+	type parameters struct {
+		FeedID uuid.UUID `json:"feed_id"`
+		
+	}
+	params:=parameters{}
+	decoder:=json.NewDecoder(r.Body)
+	err:=decoder.Decode(&params)
+	if(err !=nil){
+		errorResponse(w,400,fmt.Sprintf("Error parsing json: %v",err))
+		return
+		
+	}
+	follow,err:=apiCfg.DB.CreateFeedFollow(r.Context(),database.CreateFeedFollowParams{
+		ID: uuid.New(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+		FeedID: params.FeedID,
+		UserID: user.ID,
+
+	})
+
+	if(err!=nil){
+		errorResponse(w,400,fmt.Sprintf("Unable to  follow feed %v:",err))
+	}
+	jsonResponse(w,201,dbFollowToFollow(follow))
+
+}
+
+
 func (apiCfg *apiConfig)createFeedHandler( w http.ResponseWriter , r *http.Request , user database.User){
 	type parameters struct {
 		Name string `json:"name"`
