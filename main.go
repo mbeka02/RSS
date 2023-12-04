@@ -62,13 +62,15 @@ func main() {
 
 	 }))
 	 v1Router:= chi.NewRouter()
-	 v1Router.Get("/ready",jsonHandler)
-	 v1Router.Get("/err",errorHandler)
+	// v1Router.Get("/ready",jsonHandler)
+	 //v1Router.Get("/err",errorHandler)
 	 v1Router.Get("/users",apiCfg.middlewareAuth(apiCfg.getUserHandler))
 	 v1Router.Get("/feeds",apiCfg.getFeedsHandler)
+	 v1Router.Get("/follows",apiCfg.middlewareAuth(apiCfg.getFeedFollowsHandler))
 	 v1Router.Post("/users",apiCfg.createUserHandler)
 	 v1Router.Post("/feeds",apiCfg.middlewareAuth(apiCfg.createFeedHandler))
-	 v1Router.Post("/follow",apiCfg.middlewareAuth(apiCfg.createFeedFollowsHandler))
+	 v1Router.Post("/follows",apiCfg.middlewareAuth(apiCfg.createFeedFollowsHandler))
+	 v1Router.Post("/follows/{feedFollowID}",apiCfg.middlewareAuth(apiCfg.deleteFeedFollowsHandler))
 	 router.Mount("/v1",v1Router)
 	
     

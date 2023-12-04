@@ -86,3 +86,15 @@ func dbFeedsToFeeds(dbFeeds []database.Feed) []Feed {
 	return feeds
 }
 
+func dbFollowsToFollows(dbFollows []database.FeedFollow) []FeedFollow {
+	follows:=[]FeedFollow{}
+
+	for _ , dbFollow := range dbFollows {
+        follows=append(follows , dbFollowToFollow(dbFollow))
+	}
+
+	return follows
+}
+
+
+

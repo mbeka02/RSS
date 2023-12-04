@@ -6,19 +6,20 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-chi/chi"
 	"github.com/google/uuid"
 
 	"github.com/mbeka02/RSS/internal/database"
 )
 
-func jsonHandler( w http.ResponseWriter , r *http.Request){
+/*func jsonHandler( w http.ResponseWriter , r *http.Request){
 	jsonResponse(w,200,struct{}{})
 }
 
 func errorHandler(w http.ResponseWriter , r *http.Request){
 	errorResponse(w,400 , "Something went wrong")
 
-}
+}*/
 
 func (apiCfg *apiConfig)createUserHandler( w http.ResponseWriter , r *http.Request){
 	type parameters struct {
@@ -64,6 +65,16 @@ func  (apiCfg *apiConfig)getFeedsHandler( w http.ResponseWriter , r *http.Reques
 
 }
 
+func ( apiCfg *apiConfig)getFeedFollowsHandler( w http.ResponseWriter , r *http.Request , user database.User ){
+	follows,err:=apiCfg.DB.GetFeedFollows(r.Context(),user.ID)
+	if(err !=nil){
+		errorResponse(w,400,fmt.Sprintf("Error getting the feeds: %v",err))
+		return
+		
+	}
+	jsonResponse(w,200,dbFollowsToFollows(follows))
+}
+
 
 func ( apiCfg *apiConfig)createFeedFollowsHandler( w http.ResponseWriter , r *http.Request , user database.User ){
 	type parameters struct {
@@ -91,6 +102,28 @@ func ( apiCfg *apiConfig)createFeedFollowsHandler( w http.ResponseWriter , r *ht
 		errorResponse(w,400,fmt.Sprintf("Unable to  follow feed %v:",err))
 	}
 	jsonResponse(w,201,dbFollowToFollow(follow))
+
+}
+
+func ( apiCfg *apiConfig)deleteFeedFollowsHandler( w http.ResponseWriter , r *http.Request , user database.User ){
+	feedFollowIDStr:=chi.URLParam(r , "feedFollowID")
+	FeedFollowID,err:=uuid.Parse(feedFollowIDStr)
+	if(err !=nil){
+		errorResponse(w,400,fmt.Sprintf("Unable to parse feed follow ID: %v",err))
+		return
+		
+	}
+
+	err=apiCfg.DB.DeleteFeedFollow(r.Context(),database.DeleteFeedFollowParams{
+		UserID: user.ID,
+		ID: FeedFollowID,
+	})
+
+	if(err!=nil){
+		errorResponse(w,400,fmt.Sprintf("Unable to delete feed follow %v:",err))
+	}
+
+  jsonResponse(w,200,struct{}{})
 
 }
 
