@@ -28,25 +28,22 @@ func urlToFeed(url string) (RSSFeed, error) {
 	httpClient := http.Client{
 		Timeout: 10 * time.Second,
 	}
-	rssFeed:=RSSFeed{}
+	rssFeed := RSSFeed{}
 
-	response,err:=httpClient.Get(url)
-	  if(err !=nil){
-		return RSSFeed{} , err
+	response, err := httpClient.Get(url)
+	if err != nil {
+		return RSSFeed{}, err
 	}
-
-	
 
 	defer response.Body.Close()
-	data,err:=io.ReadAll(response.Body)
-    if(err !=nil){
-		return RSSFeed{} , err
+	data, err := io.ReadAll(response.Body)
+	if err != nil {
+		return RSSFeed{}, err
 	}
-	err=xml.Unmarshal(data , &rssFeed)
-	if(err !=nil){
-		return RSSFeed{} , err
+	err = xml.Unmarshal(data, &rssFeed)
+	if err != nil {
+		return RSSFeed{}, err
 	}
 
-
-	return rssFeed,nil
+	return rssFeed, nil
 }
