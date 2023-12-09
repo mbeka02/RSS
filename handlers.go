@@ -149,15 +149,15 @@ func (apiCfg *apiConfig) createFeedHandler(w http.ResponseWriter, r *http.Reques
 
 }
 
-func (apiCfg *apiConfig)  getPostsForUserHandler(w http.ResponseWriter, r *http.Request, user database.User){
-	posts,err:=apiCfg.DB.GetPostsForUser(r.Context(),database.GetPostsForUserParams{
+func (apiCfg *apiConfig) getPostsForUserHandler(w http.ResponseWriter, r *http.Request, user database.User) {
+	posts, err := apiCfg.DB.GetPostsForUser(r.Context(), database.GetPostsForUserParams{
 		UserID: user.ID,
-		Limit: 10,
+		Limit:  10,
 	})
 	if err != nil {
 		errorResponse(w, 400, fmt.Sprintf("Unable to fetch your posts %v:", err))
 	}
 
-	jsonResponse(w,200,dbPostsToPosts(posts))
+	jsonResponse(w, 200, dbPostsToPosts(posts))
 
 }
