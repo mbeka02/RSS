@@ -49,7 +49,7 @@ func main() {
 	queries := database.New(conn)
 	const collectionConcurrency = 10
 	const collectionInterval = time.Minute
-
+    
 	apiCfg := apiConfig{
 
 		DB: queries,
@@ -66,6 +66,7 @@ func main() {
 		MaxAge:         300, // Maximum value not ignored by any of major browsers
 
 	}))
+	//version 1
 	v1Router := chi.NewRouter()
 	// v1Router.Get("/ready",jsonHandler)
 	//v1Router.Get("/err",errorHandler)
